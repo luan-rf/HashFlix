@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}
+HashFlix - Filmes
+{% endblock %}
+
+{% block head %}
+<style>
+/* CSS Nativo corrigido para o navegador entender */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: #000;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 100%);
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+.wrapper .carrossel-secao {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.wrapper .item {
+  padding: 0 2px;
+  transition: 250ms all ease-in-out;
+}
+
+.wrapper .item:hover {
+  transform: scale(1.15);
+  z-index: 10;
+}
+
+/* Estilo exclusivo para as setas de navegação */
+.wrapper a.arrow__btn {
+  position: absolute;
+  color: #fff;
+  text-decoration: none;
+  font-size: 4em;
+  background: rgba(0, 0, 0, 0.7);
+  width: 60px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: background 0.3s;
+}
+
+.wrapper a.arrow__btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.wrapper a.arrow__btn.left-arrow {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(-90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
+}
+
+.wrapper a.arrow__btn.right-arrow {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%);
+}
+
+/* Esconde setas em dispositivos móveis */
+@media only screen and (max-width: 600px) {
+  a.arrow__btn {
+    display: none !important;
+  }
+}
+</style>
+{% endblock %}
+
+
+{% block conteudo %}
+<main class="min-h-screen bg-black px-6 pt-24 pb-10 text-white" style="color: #ffffff !important;">
+
+    <!-- HERO DESTAQUE SUPERIOR -->
+    {% if filme_destaque %}
+    <section class="h-[70vh] md:h-screen relative bg-no-repeat pb-8 pl-6 flex items-end bg-cover bg-center rounded-xl overflow-hidden mb-10"
+             style="background-image: url('{% if filme_destaque.thumb %}{{ filme_destaque.thumb.url }}{% endif %}');">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+        <div class="relative z-10 p-4">
+            <h2 class="text-4xl md:text-6xl font-extrabold text-white my-4 drop-shadow-md" style="color: #ffffff !important;">
+                {{ filme_destaque.titulo }}
+            </h2>
+            <p class="w-11/12 md:w-5/12 font-medium text-gray-200 my-4 drop-shadow">
+                {{ filme_destaque.descricao }}
+            </p>
+            <div class="flex my-4">
+                <a href="{% url 'filme:detalhesfilme' filme_destaque.pk %}" class="no-underline">
+                    <button class="flex items-center bg-white hover:bg-gray-200 text-black py-2.5 px-6 rounded-md font-bold transition transform hover:scale-105 border-0 cursor-pointer shadow-lg">
+                        <ion-icon name="play-sharp" class="text-2xl mr-2 text-black"></ion-icon>
+                        <span class="text-black font-bold">Assistir</span>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- CARROSSEL NOVO -->
+    <section class='bg-black flex justify-center py-6'>
+        <div class="w-full relative">
+            <h2 class="text-gray-200 text-2xl font-bold mb-4 tracking-wide" style="color: #ffffff !important;">
+                Novo
+            </h2>
+            <div class="wrapper">
+
+                <!-- PÁGINA 1 DO CARROSSEL -->
+                <section id="section1" class="carrossel-secao">
+                    {% if lista_filmes_recentes|length > 4 %}
+                        <a href="#section2" class="arrow__btn left-arrow">‹</a>
+                    {% endif %}
+
+                    <div class="flex w-full justify-around items-center px-10 gap-4">
+                        {% for filme in lista_filmes_recentes %}
+                            {% if forloop.counter <= 4 %}
+                                <div class="item h-64 w-1/4">
+                                    <a href="{% url 'filme:detalhesfilme' filme.pk %}" class="block h-full w-full">
+                                        {% if filme.thumb %}
+                                            <img src="{{ filme.thumb.url }}" alt="{{ filme.titulo }}" class="rounded-md w-full h-full object-cover shadow-lg">
+                                        {% else %}
+                                            <div class="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center text-xs text-zinc-500">Sem Capa</div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if lista_filmes_recentes|length > 4 %}
+                        <a href="#section2" class="arrow__btn right-arrow">›</a>
+                    {% endif %}
+                </section>
+
+                <!-- PÁGINA 2 DO CARROSSEL -->
+                {% if lista_filmes_recentes|length > 4 %}
+                <section id="section2" class="carrossel-secao">
+                    <a href="#section1" class="arrow__btn left-arrow">‹</a>
+
+                    <div class="flex w-full justify-around items-center px-10 gap-4">
+                        {% for filme in lista_filmes_recentes %}
+                            {% if forloop.counter > 4 and forloop.counter <= 8 %}
+                                <div class="item h-64 w-1/4">
+                                    <a href="{% url 'filme:detalhesfilme' filme.pk %}" class="block h-full w-full">
+                                        {% if filme.thumb %}
+                                            <img src="{{ filme.thumb.url }}" alt="{{ filme.titulo }}" class="rounded-md w-full h-full object-cover shadow-lg">
+                                        {% else %}
+                                            <div class="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center text-xs text-zinc-500">Sem Capa</div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <a href="#section1" class="arrow__btn right-arrow">›</a>
+                </section>
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- NOVO CARROSSEL: EM ALTA (QUANTIDADE DE VIEWS) -->
+    <section class='bg-black flex justify-center py-6'>
+        <div class="w-full relative">
+            <h2 class="text-gray-200 text-2xl font-bold mb-4 tracking-wide" style="color: #ffffff !important;">
+                Em alta na comunidade
+            </h2>
+            <div class="wrapper">
+
+                <!-- PÁGINA 1 DO CARROSSEL -->
+                <section id="section1emalta" class="carrossel-secao">
+                    {% if lista_filmes_populares|length > 4 %}
+                        <a href="#section2emalta" class="arrow__btn left-arrow">‹</a>
+                    {% endif %}
+
+                    <div class="flex w-full justify-around items-center px-10 gap-4">
+                        {% for filme in lista_filmes_populares %}
+                            {% if forloop.counter <= 4 %}
+                                <div class="item h-64 w-1/4">
+                                    <a href="{% url 'filme:detalhesfilme' filme.pk %}" class="block h-full w-full">
+                                        {% if filme.thumb %}
+                                            <img src="{{ filme.thumb.url }}" alt="{{ filme.titulo }}" class="rounded-md w-full h-full object-cover shadow-lg">
+                                        {% else %}
+                                            <div class="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center text-xs text-zinc-500">Sem Capa</div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if lista_filmes_populares|length > 4 %}
+                        <a href="#section2emalta" class="arrow__btn right-arrow">›</a>
+                    {% endif %}
+                </section>
+
+                <!-- PÁGINA 2 DO CARROSSEL -->
+                {% if lista_filmes_populares|length > 4 %}
+                <section id="section2emalta" class="carrossel-secao">
+                    <a href="#section1emalta" class="arrow__btn left-arrow">‹</a>
+
+                    <div class="flex w-full justify-around items-center px-10 gap-4">
+                        {% for filme in lista_filmes_populares %}
+                            {% if forloop.counter > 4 and forloop.counter <= 8 %}
+                                <div class="item h-64 w-1/4">
+                                    <a href="{% url 'filme:detalhesfilme' filme.pk %}" class="block h-full w-full">
+                                        {% if filme.thumb %}
+                                            <img src="{{ filme.thumb.url }}" alt="{{ filme.titulo }}" class="rounded-md w-full h-full object-cover shadow-lg">
+                                        {% else %}
+                                            <div class="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center text-xs text-zinc-500">Sem Capa</div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <a href="#section1emalta" class="arrow__btn right-arrow">›</a>
+                </section>
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- NOVO CARROSSEL: JÁ VISTOS PELO USUÁRIO QUE ESTÁ LOGADO -->
+{% if request.user.is_authenticated and request.user.filmes_vistos.exists %}
+<section class='bg-black flex justify-center py-6'>
+    <div class="w-full relative">
+        <h2 class="text-gray-200 text-2xl font-bold mb-4 tracking-wide" style="color: #ffffff !important;">
+            Visto anteriormente
+        </h2>
+        <div class="wrapper">
+
+            <!-- PÁGINA 1 DO CARROSSEL -->
+            <section id="section1javisto" class="carrossel-secao">
+                {% if request.user.filmes_vistos.count > 4 %}
+                    <a href="#section2javisto" class="arrow__btn left-arrow">‹</a>
+                {% endif %}
+
+                <div class="flex w-full justify-around items-center px-10 gap-4">
+                    {% for filme in request.user.filmes_vistos.all %}
+                        {% if forloop.counter <= 4 %}
+                            <div class="item h-64 w-1/4">
+                                <a href="{% url 'filme:detalhesfilme' filme.pk %}" class="block h-full w-full">
+                                    {% if filme.thumb %}
+                                        <img src="{{ filme.thumb.url }}" alt="{{ filme.titulo }}" class="rounded-md w-full h-full object-cover shadow-lg">
+                                    {% else %}
+                                        <div class="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center text-xs text-zinc-500">Sem Capa</div>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if request.user.filmes_vistos.count > 4 %}
+                    <a href="#section2javisto" class="arrow__btn right-arrow">›</a>
+                {% endif %}
+            </section>
+
+            <!-- PÁGINA 2 DO CARROSSEL -->
+            {% if request.user.filmes_vistos.count > 4 %}
+            <section id="section2javisto" class="carrossel-secao">
+                <a href="#section1javisto" class="arrow__btn left-arrow">‹</a>
+
+                <div class="flex w-full justify-around items-center px-10 gap-4">
+                    {% for filme in request.user.filmes_vistos.all %}
+                        {% if forloop.counter > 4 and forloop.counter <= 8 %}
+                            <div class="item h-64 w-1/4">
+                                <a href="{% url 'filme:detalhesfilme' filme.pk %}" class="block h-full w-full">
+                                    {% if filme.thumb %}
+                                        <img src="{{ filme.thumb.url }}" alt="{{ filme.titulo }}" class="rounded-md w-full h-full object-cover shadow-lg">
+                                    {% else %}
+                                        <div class="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center text-xs text-zinc-500">Sem Capa</div>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <a href="#section1javisto" class="arrow__btn right-arrow">›</a>
+            </section>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endif %}
+</main>
+{% endblock %}

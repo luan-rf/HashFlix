@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+Homepage Hashflix
+{% endblock %}
+
+{% block conteudo %}
+<style>
+    /* Estilização para o input nativo renderizado via form.email */
+    .netflix-input input {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.65) !important;
+        color: #ffffff !important;
+        border: 1px solid #4b5563 !important; /* border-gray-600 */
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .netflix-input input:focus {
+        border-color: #dc2626 !important; /* Vermelho Netflix ao focar */
+        background-color: rgba(0, 0, 0, 0.85) !important;
+    }
+
+    .netflix-input input::placeholder {
+        color: #9ca3af !important; /* text-gray-400 */
+    }
+</style>
+
+<header class="relative min-h-screen border-gray-600 border-b-8 flex justify-center items-center bg-no-repeat bg-cover bg-center" style="background-image: url('{% static 'images/background_netflix.jpg' %}');">
+
+    <!-- Camada escura (Overlay) para destacar o texto -->
+    <div class="absolute inset-0 bg-black/65 z-0"></div>
+
+    <!-- Conteúdo da Homepage -->
+    <div class="relative z-10 h-full py-32 md:py-0 flex items-center flex-col text-center" style="color: #ffffff !important;">
+
+        <h1 class="font-bold text-4xl md:text-5xl w-10/12 md:w-3/4 text-center mb-4" style="color: #ffffff !important;">
+            Filmes e séries da Hashtag, tudo em um só lugar.
+        </h1>
+        <h3 class="text-xl md:text-2xl py-3" style="color: #ffffff !important;">
+            Assista onde quiser. Cancele quando quiser.
+        </h3>
+        <h4 class="text-sm md:text-lg pb-5" style="color: #ffffff !important;">
+            Quer começar? Coloque seu e-mail abaixo para acessar.
+        </h4>
+
+        <!-- FORMULÁRIO ESTILIZADO -->
+        <div class="w-full flex justify-center">
+            <div class="flex justify-center items-center w-11/12 md:w-10/12 max-w-2xl">
+                <form method="post" class="w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0">
+                    {% csrf_token %}
+
+                    <div class="netflix-input w-full md:w-8/12 h-14">
+                        {{ form.email }}
+                    </div>
+
+                    <button class="w-full md:w-auto h-14 bg-red-600 hover:bg-red-700 text-white font-semibold flex justify-center items-center px-8 rounded-md md:rounded-l-none md:rounded-r-md text-xl md:text-2xl whitespace-nowrap border-0 cursor-pointer transition" type="submit">
+                        <span style="color: #ffffff !important;">Acessar</span>
+                        <ion-icon name="chevron-forward-outline" class="text-2xl ml-1" style="color: #ffffff !important;"></ion-icon>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<section class='flex flex-col md:flex-row items-center border-gray-900 border-b-8' style="min-height: 70vh;">
+    <div class="md:w-1/2 flex flex-col justify-center text-center md:text-left p-5 md:p-10 ">
+        <h2 class="md:text-5xl text-4xl font-semibold mb-4" style="color: #ffffff !important;">
+            Enjoy on your TV.
+        </h2>
+        <h5 class="md:text-xl text-lg" style="color: #ffffff !important;">
+            Watch on Smart TVs, PlayStation, Xbox, Chromecast, Apple TV, Blu-ray players, and more.
+        </h5>
+    </div>
+    <div class='md:w-1/2 flex justify-center items-center'>
+        <img src="{% static 'images/tv.png' %}" class="w-8/12" alt="">
+    </div>
+</section>
+
+<section class='flex flex-col md:flex-row items-center border-gray-900 border-b-8' style="min-height: 70vh;">
+    <div class='md:w-1/2 flex justify-center items-center '>
+        <img src="{% static 'images/mobile-0819.jpg' %}" class="w-8/12" alt="">
+    </div>
+
+    <div class="md:w-1/2 flex flex-col justify-center text-center md:text-left p-5 md:p-10">
+        <h2 class="md:text-5xl text-4xl font-semibold mb-4" style="color: #ffffff !important;">
+            Download your shows to watch offline.
+        </h2>
+        <h5 class="md:text-xl text-lg" style="color: #ffffff !important;">
+            Save your favorites easily and always have something to watch.
+        </h5>
+    </div>
+</section>
+
+<section class='flex flex-col md:flex-row items-center border-gray-900 border-b-8' style="min-height: 70vh;">
+    <div class="md:w-1/2 flex flex-col justify-center text-center md:text-left p-5 md:p-10">
+        <h2 class="md:text-5xl text-4xl font-semibold mb-4" style="color: #ffffff !important;">
+            Create profiles for kids.
+        </h2>
+        <h5 class="md:text-xl text-lg" style="color: #ffffff !important;">
+            Send kids on adventures with their favorite characters in a space made just for them—free with your membership.
+        </h5>
+    </div>
+    <div class='md:w-1/2 flex justify-center items-center'>
+        <img src="{% static 'images/netflix_kid.png' %}" class="w-8/12" alt="">
+    </div>
+</section>
+
+<footer class=" px-5 py-10 ">
+    <ul class="flex justify-between items-center" style="color: #ffffff !important;">
+        <li>&copy; 2026</li>
+        <li> Feito com Python (Django)</li>
+    </ul>
+</footer>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+HashFlix - {{ filme.titulo }}
+{% endblock %}
+
+{% block conteudo %}
+<main class="min-h-screen bg-black text-white font-sans overflow-x-hidden" style="color: #ffffff !important;">
+
+    <!-- ================= HERO SECTION (TELA CHEIA ESTILO NETFLIX) ================= -->
+    <section class="relative w-full min-h-[85vh] md:min-h-screen flex items-center bg-no-repeat bg-cover bg-center"
+             style="background-image: url('{% if filme.thumb %}{{ filme.thumb.url }}{% endif %}');">
+
+        <!-- Degradê Preto da Esquerda para Direita (Para dar leitura ao texto) -->
+        <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10"></div>
+
+        <!-- Degradê Preto de Baixo para Cima (Para conectar suavemente com a lista abaixo) -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 z-10"></div>
+
+        <!-- Conteúdo do Hero -->
+        <div class="relative z-20 max-w-6xl mx-auto px-6 pt-24 pb-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+            <!-- Lado Esquerdo: Informações do Filme -->
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-3 drop-shadow-lg" style="color: #ffffff !important;">
+                    {{ filme.titulo }}
+                </h1>
+
+                <!-- Badge de Visualizações -->
+                <div class="flex items-center gap-3 mb-4 text-sm font-semibold text-zinc-300">
+                    <span class="border border-zinc-600 px-2 py-0.5 rounded text-xs text-zinc-400">HD</span>
+                    <span class="text-zinc-400 flex items-center gap-1">
+                        <ion-icon name="eye-outline" class="text-base"></ion-icon>
+                        Visualizações: {{ object.quantidade_view }}
+                    </span>
+                </div>
+
+                <p class="text-base md:text-lg text-zinc-300 leading-relaxed mb-6 max-w-2xl drop-shadow line-clamp-4" style="color: #d4d4d8 !important;">
+                    {{ filme.descricao }}
+                </p>
+
+                <!-- Botões de Ação -->
+                <div class="flex flex-wrap items-center gap-4">
+                    {% if object.episodios.first %}
+                        <a href="#player-section" class="bg-white hover:bg-zinc-200 text-black font-bold py-3 px-8 rounded-md flex items-center gap-2 transition duration-200 transform hover:scale-105 no-underline border-0 shadow-lg cursor-pointer">
+                            <ion-icon name="play-sharp" class="text-2xl text-black"></ion-icon>
+                            <span class="text-black font-bold">Assistir</span>
+                        </a>
+                    {% endif %}
+
+                    <a href="#episodios-section" class="bg-zinc-600/70 hover:bg-zinc-600/90 text-white font-bold py-3 px-6 rounded-md flex items-center gap-2 transition duration-200 no-underline border-0 shadow-lg cursor-pointer backdrop-blur-sm">
+                        <ion-icon name="list-outline" class="text-2xl text-white"></ion-icon>
+                        <span style="color: #ffffff !important;">Episódios</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Lado Direito: Player de Vídeo em Destaque (Se houver episódios) -->
+            {% if object.episodios.first %}
+                <div id="player-section" class="lg:col-span-5 w-full mt-6 lg:mt-0">
+                    <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-zinc-700/60 bg-zinc-900 shadow-2xl ring-1 ring-white/10">
+                        <iframe
+                            id="player-video"
+                            src="{{ object.episodios.first.link_video }}"
+                            class="w-full h-full"
+                            frameborder="0"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-2 text-center flex items-center justify-center gap-1">
+                        <ion-icon name="information-circle-outline"></ion-icon>
+                        Selecione outros episódios na lista abaixo para trocar de vídeo.
+                    </p>
+                </div>
+            {% endif %}
+
+        </div>
+    </section>
+
+    <!-- ================= CONTEÚDO PRINCIPAL (LISTAS E SEÇÕES) ================= -->
+    <div class="max-w-6xl mx-auto px-6 relative z-20 -mt-6">
+
+        <!-- SEÇÃO: Lista de Episódios -->
+        <section id="episodios-section" class="pt-8">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 tracking-wide flex items-center gap-2" style="color: #ffffff !important;">
+                <span class="w-1 h-7 bg-red-600 rounded-full inline-block"></span>
+                Episódios
+            </h2>
+
+            <div class="flex flex-col gap-3">
+                {% for episodio in object.episodios.all %}
+                    <button onclick="document.getElementById('player-video').src='{{ episodio.link_video }}'; window.location.href='#player-section';"
+                            class="group bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-lg p-4 transition-all duration-200 flex items-center justify-between text-left cursor-pointer border-0 w-full">
+
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-zinc-800 group-hover:bg-red-600 flex items-center justify-center transition-colors duration-200 shrink-0 shadow-md">
+                                <ion-icon name="play-sharp" class="text-white text-lg ml-0.5"></ion-icon>
+                            </div>
+
+                            <div>
+                                <span class="text-xs uppercase font-semibold text-red-500 tracking-wider block mb-0.5" style="color: #dc2626 !important;">
+                                    Episódio {{ forloop.counter }}
+                                </span>
+                                <h3 class="text-base md:text-lg font-medium text-white group-hover:text-red-400 transition-colors" style="color: #ffffff !important;">
+                                    {{ episodio.titulo }}
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="text-zinc-500 group-hover:text-white transition-colors">
+                            <ion-icon name="play-circle-outline" class="text-2xl"></ion-icon>
+                        </div>
+                    </button>
+                {% empty %}
+                    <div class="bg-zinc-900/40 border border-zinc-800 rounded-lg p-6 text-center text-zinc-500">
+                        Nenhum episódio cadastrado para este título.
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- DIVISOR DE SEÇÃO -->
+        <hr class="border-zinc-800/80 my-12">
+
+        <!-- SEÇÃO: Filmes Relacionados -->
+        <section class="mt-8">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 tracking-wide flex items-center gap-2" style="color: #ffffff !important;">
+                <span class="w-1 h-7 bg-red-600 rounded-full inline-block"></span>
+                Filmes Relacionados
+            </h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {% for relacionado in filmes_relacionados %}
+                    <a href="{% url 'filme:detalhesfilme' relacionado.id %}" class="group relative bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 shadow-md flex flex-col no-underline">
+
+                        <div class="aspect-[2/3] w-full bg-zinc-800 relative overflow-hidden">
+                            {% if relacionado.thumb %}
+                                <img src="{{ relacionado.thumb.url }}" alt="{{ relacionado.titulo }}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity" />
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center p-2 text-center text-xs text-zinc-500">
+                                    Sem imagem
+                                </div>
+                            {% endif %}
+
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
+                                    <ion-icon name="play-sharp" class="text-white text-lg ml-0.5"></ion-icon>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3">
+                            <h3 class="text-sm font-semibold text-white group-hover:text-red-400 transition-colors line-clamp-1" style="color: #ffffff !important;">
+                                {{ relacionado.titulo }}
+                            </h3>
+                        </div>
+
+                    </a>
+                {% empty %}
+                    <div class="col-span-full bg-zinc-900/40 border border-zinc-800 rounded-lg p-6 text-center text-zinc-500">
+                        Nenhum título relacionado.
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- DIVISOR DE SEÇÃO -->
+        <hr class="border-zinc-800/80 my-12">
+    
+        <!-- DIVISOR DE SEÇÃO -->
+        <hr class="border-zinc-800/80 my-12">
+
+        <!-- SEÇÃO: Mais Recentes -->
+        <section class="mt-8 mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 tracking-wide flex items-center gap-2" style="color: #ffffff !important;">
+                <span class="w-1 h-7 bg-red-600 rounded-full inline-block"></span>
+                Mais Recentes
+            </h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {% for recente in lista_filmes_recentes %}
+                    <a href="{% url 'filme:detalhesfilme' recente.id %}" class="group relative bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 shadow-md flex flex-col no-underline">
+
+                        <div class="aspect-[2/3] w-full bg-zinc-800 relative overflow-hidden">
+                            {% if recente.thumb %}
+                                <img src="{{ recente.thumb.url }}" alt="{{ recente.titulo }}" class="w-full h-full object-cover group-hover:opacity-80 transition-opacity" />
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center p-2 text-center text-xs text-zinc-500">
+                                    Sem imagem
+                                </div>
+                            {% endif %}
+
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
+                                    <ion-icon name="play-sharp" class="text-white text-lg ml-0.5"></ion-icon>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3">
+                            <h3 class="text-sm font-semibold text-white group-hover:text-red-400 transition-colors line-clamp-1" style="color: #ffffff !important;">
+                                {{ recente.titulo }}
+                            </h3>
+                        </div>
+
+                    </a>
+                {% empty %}
+                    <div class="col-span-full bg-zinc-900/40 border border-zinc-800 rounded-lg p-6 text-center text-zinc-500">
+                        Nenhum filme recente encontrado.
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+</main>
+{% endblock %}
